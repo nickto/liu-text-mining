@@ -7,6 +7,7 @@ Scrapes Twitter hashtags related to #machinelearning.
 
 from lxml import html
 import urllib.request
+VISITED_MAX = 30
 
 
 def get_related_searches(url):
@@ -29,9 +30,7 @@ def get_related_searches(url):
     for search in related_searches:
         url = "https://twitter.com" + search.get("href")
         hashtag = search.text_content().strip()
-        # Only add hashtags, not just searches
-        if hashtag[0] == "#":
-            hashtags[hashtag] = url
+        hashtags[hashtag] = url
 
     return hashtags
 
@@ -74,16 +73,42 @@ def visit_unvisited(hashtags):
     return hashtags
 
 
+def unvisited_remain(hashtags):
+    """Check if there are any unisited hashtags."""
+    for key, value in hashtags.items():
+        if not value["visited"]:
+            return True
+    return False
+
+
+def count_visited(hashtags):
+    """Count visited hashtags."""
+    counter = 0
+    for key, value in hashtags.items():
+        if key[0] == "#" and value["visited"]:
+            counter += 1
+    print(counter)
+    return counter
+
+
+def scrape_from_entry_point(url, hashtags={}):
+    """Scrape hashtags from an entry point specified as URL."""
+    initial_hashtags = get_related_searches(url)
+
+    for hashtag, url in initial_hashtags.items():
+        new_hashtags = get_related_searches(url)
+        add_new_hashtags(hashtags, new_hashtags)
+
+    while unvisited_remain(hashtags) and count_visited(hashtags) < VISITED_MAX:
+        hashtags = visit_unvisited(hashtags)
+
+    return hashtags
+
+
 # Start with #machinelearning hashtag
-# https://twitter.com/hashtag/machinelearning?src=rela
-url = u"https://twitter.com/hashtag/machinelearning?src=rela"
-ml_hashtags = get_related_searches(url)
+url = u"https://twitter.com/hashtag/bayesianinference?src=rela"
+hashtags = scrape_from_entry_point(url)
 
-hashtags = {}
-for hashtag, url in ml_hashtags.items():
-    new_hashtags = get_related_searches(url)
-    add_new_hashtags(hashtags, new_hashtags)
-
-hashtags = visit_unvisited(hashtags)
 for key, value in hashtags.items():
-    print(value["hashtag"])
+    if value["hashtag"][0] == "#":
+        print(value["hashtag"] + "\t" + str(value["visited"]))
