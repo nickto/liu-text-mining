@@ -30,12 +30,15 @@ def get_twitter_object(oauth_path="oauth.json"):
     return t
 
 
-def get_tweets_by_hashtags(hashtag, t, filepath):
+def get_tweets_by_hashtags(hashtag, t, filepath=None):
     """Get tweets by hashtag."""
     response = t.search.tweets(q=hashtag)
 
-    with open(filepath, 'w') as outfile:
-        json.dump(response, outfile)
+    if filepath is not None:
+        with open(filepath, 'w') as outfile:
+            json.dump(response, outfile)
+
+    return response
 
 
 def main():
