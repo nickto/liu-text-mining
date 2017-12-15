@@ -36,17 +36,12 @@ def load_hashtags(filename="hashtags"):
 
 def main():
     """Run queries."""
-    # create logger
+    # Create logger
     logging.basicConfig(
         filename="get_all_hashtags.log",
         format="%(levelname)s - %(asctime)s - %(message)s",
         level=logging.INFO)
     logger = logging.getLogger()
-    # ch = logging.StreamHandler()
-    # ch.setLevel(logging.INFO)
-    # formatter = logging.Formatter('%(asctime)s - %(message)s')
-    # ch.setFormatter(formatter)
-    # logger.addHandler(ch)
 
     counter_added = 0
     counter_skipped = 0
