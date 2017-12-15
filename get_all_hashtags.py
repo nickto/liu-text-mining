@@ -3,23 +3,24 @@
 import os
 import os.path
 import json
+import gzip
 import get_tweets
 import logging
 
 
-def load_database(filename="./out/tweets.json"):
+def load_database(filename="./out/tweets.json.gz"):
     """Read JSON database and return JSON object."""
     if os.path.isfile(filename):
-        json_data = open(filename).read()
+        json_data = gzip.open(filename).read()
         data = json.loads(json_data)
     else:
         data = {}
     return data
 
 
-def save_database(data, filename="./out/tweets.json"):
+def save_database(data, filename="./out/tweets.json.gz"):
     """Write JSON object to to file."""
-    with open(filename, 'w') as outfile:
+    with gzip.open(filename, "wt") as outfile:
         json.dump(data, outfile)
 
 
