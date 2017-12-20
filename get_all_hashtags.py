@@ -6,14 +6,34 @@ import json
 import gzip
 import get_tweets
 import logging
+from time import gmtime, strftime
+
+MAX_FILE_SIZE_MB = 10
+
+
+def bytes_to_mb(size):
+    return size / 1024 / 1024
 
 
 def load_database(filename="./out/tweets.json.gz"):
     """Read JSON database and return JSON object."""
     if os.path.isfile(filename):
-        json_data = gzip.open(filename).read()
-        data = json.loads(json_data)
+        # Check file size
+        statinfo = os.stat(filename)
+        size = statinfo.st_size
+
+        if bytes_to_mb(size) > MAX_FILE_SIZE_MB:
+            # Rename file
+            suffix = strftime("%Y-%m-%d-%H%M", gmtime()) 
+            os.rename(filename, file + suffix)
+            # Return empty data
+            data = {}
+        else:
+            # Read file
+            json_data = gzip.open(filename).read()
+            data = json.loads(json_data)
     else:
+        # Return empty data
         data = {}
     return data
 
