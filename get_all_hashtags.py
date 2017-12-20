@@ -25,7 +25,7 @@ def load_database(filename="./out/tweets.json.gz"):
         if bytes_to_mb(size) > MAX_FILE_SIZE_MB:
             # Rename file
             suffix = strftime("%Y-%m-%d-%H%M", gmtime()) 
-            os.rename(filename, file + suffix)
+            os.rename(filename, filename + suffix)
             # Return empty data
             data = {}
         else:
